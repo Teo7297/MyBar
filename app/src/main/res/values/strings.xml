@@ -4,4 +4,10 @@
     <string name="registrati">Registrati</string>
     <string name="accedi_come_ospite">accedi come ospite</string>
     <string name="ricorda_scelta">ricorda scelta</string>
+    <string name="x">X</string>
+    <string name="password">password</string>
+    <string name="email">email</string>
+    <string name="conferma_password">conferma password</string>
+    <string name="username">username</string>
+    <string name="conferma">conferma</string>
 </resources>
