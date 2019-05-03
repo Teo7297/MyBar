@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">My Bar</string>
+    <string name="accedi">accedi</string>
+    <string name="registrati">Registrati</string>
+    <string name="accedi_come_ospite">accedi come ospite</string>
+    <string name="ricorda_scelta">ricorda scelta</string>
 </resources>
