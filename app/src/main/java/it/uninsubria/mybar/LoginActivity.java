@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -25,6 +26,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_access);
 
+        FirebaseApp.initializeApp(this);
         mAuth = FirebaseAuth.getInstance();
 
         dialog = new Dialog(this);
@@ -32,12 +34,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    /*@Override
-
-
-    private void updateUI(FirebaseUser currentUser) {
-        //se l'utente è registrato accede in automatico se no va alla schermata iniziale/aggiungere un or nell if per controllare la spunta per ricordare l'accesso
-    }*/
+    //login
 
     public void loginWindow(View v){
         TextView popUpClose;
@@ -91,6 +88,12 @@ public class LoginActivity extends AppCompatActivity {
         });
         dialog.show();
     }
+
+
+
+    //registration
+
+
     public void registrationWindow(View v){
         TextView popUpClose;
         EditText usernameTxt;
