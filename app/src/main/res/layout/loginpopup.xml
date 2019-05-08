@@ -53,13 +53,14 @@
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="8dp"
             android:text="@string/ricorda_credenziali" tools:targetApi="o"/>
+
         <Button
             android:id="@+id/confirm"
-            android:text="@string/accedi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="200dp"
-            android:layout_marginTop="15dp" />
+            android:layout_marginTop="15dp"
+            android:text="@string/accedi" />
 
 
     </LinearLayout>

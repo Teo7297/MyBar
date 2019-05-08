@@ -48,6 +48,7 @@ public class LoginActivity extends AppCompatActivity {
         pswTxt = (EditText) dialog.findViewById(R.id.psw);
         logInButton = (Button)findViewById(R.id.confirm);
 
+
         popUpClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
