@@ -10,4 +10,6 @@
     <string name="conferma_password">conferma password</string>
     <string name="username">username</string>
     <string name="conferma">conferma</string>
+    <string name="login_error_message">email o password non valida</string>
+    <string name="login_error_title">ERRORE CREDENZIALI</string>
 </resources>
