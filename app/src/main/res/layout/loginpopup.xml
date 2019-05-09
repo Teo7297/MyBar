@@ -60,6 +60,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="200dp"
             android:layout_marginTop="15dp"
+            android:onClick="LoginClick"
             android:text="@string/accedi" />
 
 

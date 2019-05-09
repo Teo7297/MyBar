@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -21,6 +22,9 @@ public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     Dialog dialog;
+    EditText emailTxt;
+    EditText pswTxt;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,8 +42,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public void loginWindow(View v){
         TextView popUpClose;
-        final EditText emailTxt;
-        final EditText pswTxt;
+
         Button logInButton;
 
         dialog.setContentView(R.layout.loginpopup);
@@ -56,41 +59,42 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        logInButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                String email = emailTxt.getText().toString().trim();
-                String password = pswTxt.getText().toString().trim();
 
-                if(email.isEmpty() || password.isEmpty()){
-                    AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
-                    builder.setMessage(R.string.login_error_message).setTitle(R.string.login_error_title).setPositiveButton(android.R.string.ok, null);
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
-                } else{
-                    mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if(task.isSuccessful()){
-                                Intent intent = new Intent(LoginActivity.this, ActivityMain.class);          //name nextact
-                                intent.addFlags((Intent.FLAG_ACTIVITY_NEW_TASK));
-                                intent.addFlags((Intent.FLAG_ACTIVITY_CLEAR_TASK));
-                                startActivity(intent);
-                            } else {
-                                AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
-                                builder.setMessage(task.getException().getMessage()).setTitle(R.string.login_error_title).setPositiveButton(android.R.string.ok, null);
-                                AlertDialog dialog = builder.create();
-                                dialog.show();
-                            }
-                        }
-                    });
-                }
-            }
-        });
+
+
         dialog.show();
     }
 
+    public void LoginClick(View view){
+        String email = emailTxt.getText().toString().trim();
+        String password = pswTxt.getText().toString().trim();
 
+        if(email.isEmpty() || password.isEmpty()){
+            AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+            builder.setMessage(R.string.login_error_message).setTitle(R.string.login_error_title).setPositiveButton(android.R.string.ok, null);
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        } else{
+            mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if(task.isSuccessful()){
+                        Toast toast = Toast.makeText(getApplicationContext(), "login succesful", Toast.LENGTH_LONG);
+                        toast.show();
+                        Intent intent = new Intent(LoginActivity.this, ActivityMain.class);          //name nextact
+                        intent.addFlags((Intent.FLAG_ACTIVITY_NEW_TASK));
+                        intent.addFlags((Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                        startActivity(intent);
+                    } else {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+                        builder.setMessage(task.getException().getMessage()).setTitle(R.string.login_error_title).setPositiveButton(android.R.string.ok, null);
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
+                }
+            });
+        }
+    }
 
     //registration
 
