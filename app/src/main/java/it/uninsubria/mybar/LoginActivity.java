@@ -81,10 +81,11 @@ public class LoginActivity extends AppCompatActivity {
                     if(task.isSuccessful()){
                         Toast toast = Toast.makeText(getApplicationContext(), "login succesful", Toast.LENGTH_LONG);
                         toast.show();
-                        Intent intent = new Intent(LoginActivity.this, ActivityMain.class);          //name nextact
+                        Intent intent = new Intent(LoginActivity.this, MapsActivity.class);          //name nextact
                         intent.addFlags((Intent.FLAG_ACTIVITY_NEW_TASK));
                         intent.addFlags((Intent.FLAG_ACTIVITY_CLEAR_TASK));
                         startActivity(intent);
+                        finish();
                     } else {
                         AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
                         builder.setMessage(task.getException().getMessage()).setTitle(R.string.login_error_title).setPositiveButton(android.R.string.ok, null);
