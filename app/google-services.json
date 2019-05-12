@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "171603435464-kb2qmvb5tqlm11itee1tll35f7dd6b0t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "it.uninsubria.mybar",
+            "certificate_hash": "22127b8fc754cdb8278730a6f6526bee91742a90"
+          }
+        },
+        {
+          "client_id": "171603435464-7mfmssu23lps6npehhjhjti7ds0le0qk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "it.uninsubria.mybar",
+            "certificate_hash": "a0ef9319ca758a312170101e9d5e039e4cfa33c4"
+          }
+        },
+        {
           "client_id": "171603435464-ip2ag3jmjolm9on0om4tcbbqbincldp6.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

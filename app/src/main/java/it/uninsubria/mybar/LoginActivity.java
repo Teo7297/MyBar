@@ -2,12 +2,20 @@ package it.uninsubria.mybar;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,6 +32,10 @@ public class LoginActivity extends AppCompatActivity {
     Dialog dialog;
     EditText emailTxt;
     EditText pswTxt;
+    CheckBox saveLoginCheckBox;
+    private SharedPreferences loginPreferences;
+    private SharedPreferences.Editor loginPrefsEditor;
+    private Boolean saveLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +46,16 @@ public class LoginActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         dialog = new Dialog(this);
+        loginPreferences = getApplicationContext().getSharedPreferences("loginPrefs", MODE_PRIVATE);
+        loginPrefsEditor = loginPreferences.edit();
+
+        saveLoginCheckBox = (CheckBox)findViewById(R.id.saveLoginCheckBox);
+
+        saveLogin = loginPreferences.getBoolean("saveLogin", false);
+        if (saveLogin) {
+            saveLoginCheckBox.setChecked(true);
+        }
+
 
 
     }
@@ -41,16 +63,21 @@ public class LoginActivity extends AppCompatActivity {
     //login
 
     public void loginWindow(View v){
-        TextView popUpClose;
 
+
+
+        TextView popUpClose;
         Button logInButton;
 
         dialog.setContentView(R.layout.loginpopup);
         popUpClose = (TextView) dialog.findViewById(R.id.txtClose);
         emailTxt = (EditText) dialog.findViewById(R.id.email);
         pswTxt = (EditText) dialog.findViewById(R.id.psw);
-        logInButton = (Button)findViewById(R.id.confirm);
 
+        if (saveLogin) {
+            emailTxt.setText(loginPreferences.getString("email", ""));
+            pswTxt.setText(loginPreferences.getString("password", ""));
+        }
 
         popUpClose.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,8 +93,12 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void LoginClick(View view){
+
+
         String email = emailTxt.getText().toString().trim();
         String password = pswTxt.getText().toString().trim();
+
+
 
         if(email.isEmpty() || password.isEmpty()){
             AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
@@ -75,6 +106,15 @@ public class LoginActivity extends AppCompatActivity {
             AlertDialog dialog = builder.create();
             dialog.show();
         } else{
+            if (saveLoginCheckBox.isChecked()) {
+                loginPrefsEditor.putBoolean("saveLogin", true);
+                loginPrefsEditor.putString("email", email);
+                loginPrefsEditor.putString("password", password);
+                loginPrefsEditor.apply();                               //apply for async process doesnt block ui main thread
+            } else {
+                loginPrefsEditor.clear();
+                loginPrefsEditor.apply();
+            }
             mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
@@ -96,6 +136,29 @@ public class LoginActivity extends AppCompatActivity {
             });
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     //registration
 
@@ -123,4 +186,5 @@ public class LoginActivity extends AppCompatActivity {
         });
         dialog.show();
     }
+
 }
