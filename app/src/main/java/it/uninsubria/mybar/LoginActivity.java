@@ -24,6 +24,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.internal.firebase_auth.zzes;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
@@ -35,8 +37,12 @@ import com.google.firebase.auth.zzv;
 import com.google.firebase.auth.zzx;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -52,8 +58,7 @@ public class LoginActivity extends AppCompatActivity {
     private SharedPreferences loginPreferences;
     private SharedPreferences.Editor loginPrefsEditor;
     private Boolean saveLogin;
-    FirebaseDatabase database;
-    DatabaseReference myRef; // usare myRef = database.getReference("message"); e myRef.setValue("ciao")
+    FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +66,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_access);
 
         FirebaseApp.initializeApp(this);
-        database = FirebaseDatabase.getInstance();
+        db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
 
         dialog = new Dialog(this);
@@ -189,9 +194,10 @@ public class LoginActivity extends AppCompatActivity {
     public void registrationClick(View view){
 
 
-        String email = emailReg.getText().toString().trim();
+        final String email = emailReg.getText().toString().trim();
         String password = pswReg.getText().toString().trim();
         String passwordConf = pswConf.getText().toString().trim();
+        final String username = userReg.getText().toString();
 
 
 
@@ -221,7 +227,7 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if(task.isSuccessful()){
-                        //createNewUser(task.getResult().getUser());
+                        setUsername(username, email);
                         Toast toast = Toast.makeText(getApplicationContext(), "registration succesful", Toast.LENGTH_LONG);
                         toast.show();
                         Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
@@ -237,19 +243,30 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 }
 
-                /*private void createNewUser(FirebaseUser userFromRegistration) {
-                    String username = "username";
-                    String email = userFromRegistration.getEmail();
-                    String userId = userFromRegistration.getUid();
-
-
-                    myRef = database.getReference("users");
-                    myRef.setValue(userId);
-                   // myRef.child("users").child(userId).setValue(username);
-
-                }*/
             });
         }
+    }
+
+    private void setUsername(String uname, String email){
+        Map<String, Object> user = new HashMap<>();
+        user.put("username", uname);
+        user.put("email", email);
+
+        db.collection("users")
+                .add(user)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        
+                    }
+                });
+
     }
 
 
