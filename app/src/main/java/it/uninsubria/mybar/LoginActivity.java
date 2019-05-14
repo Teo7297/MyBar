@@ -15,10 +15,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,6 +50,7 @@ import java.util.Map;
 public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
+    String spinnerText;
     Dialog dialog;
     EditText emailTxt;
     EditText pswTxt;
@@ -73,12 +77,7 @@ public class LoginActivity extends AppCompatActivity {
         loginPreferences = getApplicationContext().getSharedPreferences("loginPrefs", MODE_PRIVATE);
         loginPrefsEditor = loginPreferences.edit();
 
-        saveLoginCheckBox = (CheckBox)findViewById(R.id.saveLoginCheckBox);
 
-        saveLogin = loginPreferences.getBoolean("saveLogin", false);
-        if (saveLogin) {
-            saveLoginCheckBox.setChecked(true);
-        }
 
 
 
@@ -97,6 +96,12 @@ public class LoginActivity extends AppCompatActivity {
         popUpClose = (TextView) dialog.findViewById(R.id.txtClose);
         emailTxt = (EditText) dialog.findViewById(R.id.email);
         pswTxt = (EditText) dialog.findViewById(R.id.psw);
+        saveLoginCheckBox = (CheckBox)dialog.findViewById(R.id.saveLoginCheckBox);
+
+        saveLogin = loginPreferences.getBoolean("saveLogin", false);
+        if (saveLogin) {
+            saveLoginCheckBox.setChecked(true);
+        }
 
         if (saveLogin) {
             emailTxt.setText(loginPreferences.getString("email", ""));
@@ -173,6 +178,7 @@ public class LoginActivity extends AppCompatActivity {
     public void registrationWindow(View v){
         TextView popUpClose;
 
+
         Button conf;
         dialog.setContentView(R.layout.registration_popup);
         popUpClose = (TextView) dialog.findViewById(R.id.txtClose);
@@ -180,6 +186,24 @@ public class LoginActivity extends AppCompatActivity {
         pswReg = (EditText) dialog.findViewById(R.id.psw);
         pswConf = (EditText) dialog.findViewById(R.id.pswConf);
         emailReg = (EditText) dialog.findViewById(R.id.email);
+        Spinner spinner = (Spinner) dialog.findViewById(R.id.spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.user_types,android.R.layout.simple_spinner_item );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+        spinnerText = spinner.getSelectedItem().toString();
+
+
 
 
         popUpClose.setOnClickListener(new View.OnClickListener() {
@@ -200,8 +224,6 @@ public class LoginActivity extends AppCompatActivity {
         final String username = userReg.getText().toString();
 
 
-
-
         if(email.isEmpty() || password.isEmpty()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
             builder.setMessage(R.string.login_error_message).setTitle(R.string.login_error_title).setPositiveButton(android.R.string.ok, null);
@@ -213,21 +235,12 @@ public class LoginActivity extends AppCompatActivity {
             AlertDialog dialog = builder.create();
             dialog.show();
         } else{
-            if (saveLoginCheckBox.isChecked()) {
-                loginPrefsEditor.putBoolean("saveLogin", true);
-                loginPrefsEditor.putString("email", email);
-                loginPrefsEditor.putString("password", password);
-                loginPrefsEditor.apply();                               //apply for async process doesnt block ui main thread
-            } else {
-                loginPrefsEditor.clear();
-                loginPrefsEditor.apply();
-            }
 
             mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if(task.isSuccessful()){
-                        setUsername(username, email);
+                        setUsername(username, spinnerText, email);
                         Toast toast = Toast.makeText(getApplicationContext(), "registration succesful", Toast.LENGTH_LONG);
                         toast.show();
                         Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
@@ -246,10 +259,11 @@ public class LoginActivity extends AppCompatActivity {
             });
         }
     }
-
-    private void setUsername(String uname, String email){
+    //method to set user extra props
+    private void setUsername(String uname,String type, String email){
         Map<String, Object> user = new HashMap<>();
         user.put("username", uname);
+        user.put("type", type);
         user.put("email", email);
 
         db.collection("users")
@@ -263,11 +277,12 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        
+
                     }
                 });
 
     }
+
 
 
 }

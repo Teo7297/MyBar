@@ -34,14 +34,7 @@
         android:layout_marginVertical="320dp"
         android:text="@string/accedi_come_ospite"
         tools:targetApi="o" />
-    <CheckBox
-        android:id="@+id/saveLoginCheckBox"
-        android:layout_gravity="end"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/notRegUser"
-        android:layout_marginTop="400dp"
-        android:text="@string/ricorda_credenziali" tools:targetApi="o"/>
+
 
 
 </RelativeLayout>
