@@ -1,6 +1,7 @@
 package it.uninsubria.mybar;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -9,6 +10,8 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -30,6 +33,8 @@ public class MapsActivity extends FragmentActivity implements
     private boolean mPermissionDenied = false;
 
     private GoogleMap mMap;
+    Dialog dialog;
+    String username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,12 +43,8 @@ public class MapsActivity extends FragmentActivity implements
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.floatButton);
 
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-            }
-        });
+
 
         //firebase instance setup
         FirebaseAuth mFirebaseAuth = FirebaseAuth.getInstance();
@@ -53,6 +54,8 @@ public class MapsActivity extends FragmentActivity implements
         //user shouldn't be null, in case of error add if then else
         assert mFirebaseUser != null;   //inserire in caso sia null se serve
         String mUserId = mFirebaseUser.getUid();
+        String userEmail = mFirebaseUser.getEmail();
+        //TODO add username = get from db
 
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -60,6 +63,34 @@ public class MapsActivity extends FragmentActivity implements
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
+
+    public void profilePopup(View view){
+        dialog.setContentView(R.layout.profile_popup);
+        ImageView imageView = (ImageView) dialog.findViewById(R.id.imageView);
+
+        //profile imageView click handler
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO show profile
+            }
+        });
+        TextView userText = (TextView)dialog.findViewById(R.id.username_text);
+
+        //TODO set username as text
+
+
+        TextView popUpClose = (TextView) dialog.findViewById(R.id.txtClose);
+        popUpClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+    }
+
+
 
 
     /**
