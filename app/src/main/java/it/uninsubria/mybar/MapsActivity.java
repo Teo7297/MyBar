@@ -9,6 +9,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -17,10 +18,15 @@ import android.widget.Toast;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 public class MapsActivity extends FragmentActivity implements
         GoogleMap.OnMyLocationButtonClickListener,
@@ -42,6 +48,7 @@ public class MapsActivity extends FragmentActivity implements
         setContentView(R.layout.activity_maps);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.floatButton);
+        dialog = new Dialog(this);
 
 
 
@@ -49,13 +56,29 @@ public class MapsActivity extends FragmentActivity implements
         //firebase instance setup
         FirebaseAuth mFirebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser mFirebaseUser = mFirebaseAuth.getCurrentUser();
-        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
         //user shouldn't be null, in case of error add if then else
         assert mFirebaseUser != null;   //inserire in caso sia null se serve
-        String mUserId = mFirebaseUser.getUid();
-        String userEmail = mFirebaseUser.getEmail();
-        //TODO add username = get from db
+        final String mUserId = mFirebaseUser.getUid();
+        db.collection("users")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                if(document.getId().equals(mUserId)){
+                                    username = document.get("username").toString();
+
+                                }
+                                Log.d("succ", document.getId() + " => " + document.getData());
+                            }
+                        } else {
+                            Log.w("fail", "Error getting documents.", task.getException());
+                        }
+                    }
+                });
+
 
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -76,7 +99,7 @@ public class MapsActivity extends FragmentActivity implements
             }
         });
         TextView userText = (TextView)dialog.findViewById(R.id.username_text);
-
+        userText.setText(username);
         //TODO set username as text
 
 
