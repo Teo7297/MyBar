@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -89,18 +90,17 @@ public class MapsActivity extends FragmentActivity implements
 
     public void profilePopup(View view){
         dialog.setContentView(R.layout.profile_popup);
-        ImageView imageView = (ImageView) dialog.findViewById(R.id.imageView);
+        ImageButton image = (ImageButton) dialog.findViewById(R.id.imageButton);
 
         //profile imageView click handler
-        imageView.setOnClickListener(new View.OnClickListener() {
+        /*image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO show profile
+                //TODO show profile options
             }
-        });
-        TextView userText = (TextView)dialog.findViewById(R.id.username_text);
-        userText.setText(username);
-        //TODO set username as text
+        });*/
+        //TextView userText = (TextView)dialog.findViewById(R.id.username_text);
+        //userText.setText(username);
 
 
         TextView popUpClose = (TextView) dialog.findViewById(R.id.txtClose);
