@@ -3,6 +3,7 @@ package it.uninsubria.mybar;
 import android.Manifest;
 import android.app.Dialog;
 import android.content.pm.PackageManager;
+import android.database.MatrixCursor;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -20,14 +21,20 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import java.lang.reflect.Type;
 
 public class MapsActivity extends FragmentActivity implements
         GoogleMap.OnMyLocationButtonClickListener,
@@ -41,7 +48,9 @@ public class MapsActivity extends FragmentActivity implements
 
     private GoogleMap mMap;
     Dialog dialog;
+    FirebaseFirestore db;
     String username;
+    String email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,19 +66,20 @@ public class MapsActivity extends FragmentActivity implements
         //firebase instance setup
         FirebaseAuth mFirebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser mFirebaseUser = mFirebaseAuth.getCurrentUser();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        email = mFirebaseUser.getEmail();
+        db = FirebaseFirestore.getInstance();
         //user shouldn't be null, in case of error add if then else
         assert mFirebaseUser != null;   //inserire in caso sia null se serve
         final String mUserId = mFirebaseUser.getUid();
-        db.collection("users")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+
+        db.collection("users").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                if(document.getId().equals(mUserId)){
+                                if(document.getId().equals(email)){
                                     username = document.get("username").toString();
+
 
                                 }
                                 Log.d("succ", document.getId() + " => " + document.getData());
@@ -79,6 +89,7 @@ public class MapsActivity extends FragmentActivity implements
                         }
                     }
                 });
+
 
 
 
@@ -93,14 +104,14 @@ public class MapsActivity extends FragmentActivity implements
         ImageButton image = (ImageButton) dialog.findViewById(R.id.imageButton);
 
         //profile imageView click handler
-        /*image.setOnClickListener(new View.OnClickListener() {
+        image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //TODO show profile options
             }
-        });*/
-        //TextView userText = (TextView)dialog.findViewById(R.id.username_text);
-        //userText.setText(username);
+        });
+        TextView userText = (TextView)dialog.findViewById(R.id.username_text);
+        userText.setText(username);
 
 
         TextView popUpClose = (TextView) dialog.findViewById(R.id.txtClose);
@@ -112,6 +123,41 @@ public class MapsActivity extends FragmentActivity implements
         });
         dialog.show();
     }
+
+   /* private void getUsername(final String userEmail) {
+
+
+        db.collection("users").get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot documentSnapshots) {
+                        if (documentSnapshots.isEmpty()) {
+                            Log.d("empty", "onSuccess: LIST EMPTY");
+                            return;
+                        } else {
+                            for (DocumentSnapshot documentSnapshot : documentSnapshots) {
+                                if (documentSnapshot.exists()) {
+                                    Log.d("found", "onSuccess: DOCUMENT" + documentSnapshot.getId() + " ; " + documentSnapshot.getData());
+                                    DocumentReference documentReference1 = FirebaseFirestore.getInstance().document(userEmail);
+                                    documentReference1.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                                        //these logs here display correct data but when
+                                         //I log it in onCreate() method it's empty
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getApplicationContext(), "Error getting data!!!", Toast.LENGTH_LONG).show();
+            }
+        });
+    }*/
 
 
 

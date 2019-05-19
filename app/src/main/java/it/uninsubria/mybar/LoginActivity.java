@@ -40,6 +40,7 @@ import com.google.firebase.auth.zzv;
 import com.google.firebase.auth.zzx;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -261,13 +262,14 @@ public class LoginActivity extends AppCompatActivity {
     }
     //method to set user extra props
     private void setUsername(String uname,String type, String email){
+        CollectionReference collection = db.collection("users");
         Map<String, Object> user = new HashMap<>();
         user.put("username", uname);
         user.put("type", type);
-        user.put("email", email);
+        //user.put("email", email);
 
         db.collection("users")
-                .add(user)
+                .add(collection.document(email).set(user))
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
