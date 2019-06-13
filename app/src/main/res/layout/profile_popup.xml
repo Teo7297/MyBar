@@ -23,11 +23,10 @@
 
     <TextView
         android:id="@+id/username_text"
-        android:layout_width="143dp"
-        android:layout_height="42dp"
+        android:layout_width="157dp"
+        android:layout_height="101dp"
         android:layout_alignTop="@+id/imageButton"
-        android:layout_toEndOf="@+id/imageButton"
-        />
+        android:layout_toEndOf="@+id/imageButton" />
 
     <ImageButton
         android:id="@+id/imageButton"
@@ -37,6 +36,8 @@
         android:background="@drawable/ic_person" />
 
     <Button
+        android:id="@+id/logout"
+        android:onClick="logout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="350dp"

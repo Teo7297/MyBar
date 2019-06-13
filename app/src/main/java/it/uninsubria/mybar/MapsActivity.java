@@ -2,6 +2,7 @@ package it.uninsubria.mybar;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.MatrixCursor;
 import android.support.annotation.NonNull;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -50,6 +52,7 @@ public class MapsActivity extends FragmentActivity implements
     Dialog dialog;
     FirebaseFirestore db;
     String username;
+    String tipo;
     String email;
 
     @Override
@@ -79,7 +82,9 @@ public class MapsActivity extends FragmentActivity implements
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 if(document.getId().equals(email)){
                                     username = document.get("username").toString();
-
+                                    if(document.get("type").equals("possiedo un bar")){
+                                        tipo = "possessore bar";
+                                    } else tipo = "cliente";
 
                                 }
                                 Log.d("succ", document.getId() + " => " + document.getData());
@@ -111,7 +116,7 @@ public class MapsActivity extends FragmentActivity implements
             }
         });
         TextView userText = (TextView)dialog.findViewById(R.id.username_text);
-        userText.setText(username);
+        userText.setText("Utente:  "+username + "\n"+"\n"+ tipo);
 
 
         TextView popUpClose = (TextView) dialog.findViewById(R.id.txtClose);
@@ -124,40 +129,23 @@ public class MapsActivity extends FragmentActivity implements
         dialog.show();
     }
 
-   /* private void getUsername(final String userEmail) {
+    public void logout(View view){
+        FirebaseAuth.getInstance().signOut();
+        Toast toast = Toast.makeText(getApplicationContext(), "logout succesful", Toast.LENGTH_LONG);
+        toast.show();
+        Intent loginIntent = new Intent(MapsActivity.this, LoginActivity.class);
+        startActivity(loginIntent);
+
+    }
+
+    @Override
+    public void onBackPressed(){
+        //nothing happens
+    }
 
 
-        db.collection("users").get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot documentSnapshots) {
-                        if (documentSnapshots.isEmpty()) {
-                            Log.d("empty", "onSuccess: LIST EMPTY");
-                            return;
-                        } else {
-                            for (DocumentSnapshot documentSnapshot : documentSnapshots) {
-                                if (documentSnapshot.exists()) {
-                                    Log.d("found", "onSuccess: DOCUMENT" + documentSnapshot.getId() + " ; " + documentSnapshot.getData());
-                                    DocumentReference documentReference1 = FirebaseFirestore.getInstance().document(userEmail);
-                                    documentReference1.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                        @Override
-                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
 
-                                        //these logs here display correct data but when
-                                         //I log it in onCreate() method it's empty
-                                        }
-                                    });
-                                }
-                            }
-                        }
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getApplicationContext(), "Error getting data!!!", Toast.LENGTH_LONG).show();
-            }
-        });
-    }*/
+
 
 
 

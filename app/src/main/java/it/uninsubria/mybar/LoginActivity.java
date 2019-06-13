@@ -216,7 +216,7 @@ public class LoginActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    public void registrationClick(View view){
+    public void registrationClick(View view){  //TODO CRASH DOPO REGISTRAZIONE
 
 
         final String email = emailReg.getText().toString().trim();
@@ -268,9 +268,10 @@ public class LoginActivity extends AppCompatActivity {
         user.put("type", type);
         //user.put("email", email);
 
-        db.collection("users")
-                .add(collection.document(email).set(user))
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+        db.collection("users").document(email).set(user);
+                //.add(collection.document(email).set(user));
+
+                /*.addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
 
@@ -281,7 +282,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onFailure(@NonNull Exception e) {
 
                     }
-                });
+                }); */
 
     }
 

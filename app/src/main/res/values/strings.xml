@@ -38,4 +38,5 @@
     <string name="menu_send">Send</string>
     <string name="my_profile">my profile</string>
     <string name="logout">logout</string>
+    <string name="UserString">Utente:</string>
 </resources>
