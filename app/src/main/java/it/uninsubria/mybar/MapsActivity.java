@@ -2,9 +2,13 @@ package it.uninsubria.mybar;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.MatrixCursor;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -19,9 +23,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -33,15 +41,19 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 
 import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MapsActivity extends FragmentActivity implements
         GoogleMap.OnMyLocationButtonClickListener,
         OnMapReadyCallback,
-        ActivityCompat.OnRequestPermissionsResultCallback {
+        ActivityCompat.OnRequestPermissionsResultCallback{
 
 
     //location permissions
@@ -54,6 +66,8 @@ public class MapsActivity extends FragmentActivity implements
     String username;
     String tipo;
     String email;
+    Marker myMarker;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,9 +85,8 @@ public class MapsActivity extends FragmentActivity implements
         FirebaseUser mFirebaseUser = mFirebaseAuth.getCurrentUser();
         email = mFirebaseUser.getEmail();
         db = FirebaseFirestore.getInstance();
-        //user shouldn't be null, in case of error add if then else
-        assert mFirebaseUser != null;   //inserire in caso sia null se serve
-        final String mUserId = mFirebaseUser.getUid();
+
+        //final String mUserId = mFirebaseUser.getUid();
 
         db.collection("users").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -128,6 +141,26 @@ public class MapsActivity extends FragmentActivity implements
         });
         dialog.show();
     }
+    public void setBarLocation(View view){
+        Location location = mMap.getMyLocation();
+        double lat = location.getLatitude();
+        double lng = location.getLongitude();
+        LatLng latLng = new LatLng(lat, lng);
+
+        //update geopoint to firestore
+        GeoPoint geoPoint = new GeoPoint(lat, lng);
+        Map<String, Object> myBarLocation = new HashMap<>();
+        myBarLocation.put("bar location", geoPoint);
+        db.collection("users").document(email).set(myBarLocation, SetOptions.merge());
+
+        //TODO assegnare locandina del bar al marker
+
+        //place marker on map
+        myMarker = mMap.addMarker(new MarkerOptions().position(latLng));
+        dialog.dismiss();
+
+    }
+
 
     public void logout(View view){
         FirebaseAuth.getInstance().signOut();
@@ -142,11 +175,10 @@ public class MapsActivity extends FragmentActivity implements
     public void onBackPressed(){
         //nothing happens
     }
-
-
-
-
-
+    public void updateMenu(View view){
+        Intent menuIntent = new Intent(MapsActivity.this, MenuUpdate.class);
+        startActivity(menuIntent);
+    }
 
 
 
@@ -165,8 +197,30 @@ public class MapsActivity extends FragmentActivity implements
 
         mMap.setOnMyLocationButtonClickListener(this);
         enableMyLocation();
+        downloadAllBars();
 
+    }
 
+    private void downloadAllBars() {
+        db.collection("users").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        if(document.get("bar location") != null){
+                            GeoPoint point = (GeoPoint) document.get("bar location");
+                            LatLng latLng = new LatLng(point.getLatitude(), point.getLongitude());
+                            Marker marker = mMap.addMarker(new MarkerOptions().position(latLng));
+                            //TODO assegnare un id al marker appena piazzato che permetta di scaricare il menu del bar relativo
+
+                        }
+                        Log.d("succ", document.getId() + " => " + document.getData());
+                    }
+                } else {
+                    Log.w("fail", "Error getting documents.", task.getException());
+                }
+            }
+        });
     }
 
     private void enableMyLocation(){
@@ -205,6 +259,7 @@ public class MapsActivity extends FragmentActivity implements
             mPermissionDenied = true;
         }
     }
+
 
     @Override
     protected void onResumeFragments() {

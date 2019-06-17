@@ -187,14 +187,14 @@ public class LoginActivity extends AppCompatActivity {
         pswReg = (EditText) dialog.findViewById(R.id.psw);
         pswConf = (EditText) dialog.findViewById(R.id.pswConf);
         emailReg = (EditText) dialog.findViewById(R.id.email);
-        Spinner spinner = (Spinner) dialog.findViewById(R.id.spinner);
+        final Spinner spinner = (Spinner) dialog.findViewById(R.id.spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.user_types,android.R.layout.simple_spinner_item );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-
+                spinnerText = spinner.getItemAtPosition(i).toString();
             }
 
             @Override
@@ -202,7 +202,7 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
-        spinnerText = spinner.getSelectedItem().toString();
+
 
 
 
@@ -216,7 +216,7 @@ public class LoginActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    public void registrationClick(View view){  //TODO CRASH DOPO REGISTRAZIONE
+    public void registrationClick(View view){
 
 
         final String email = emailReg.getText().toString().trim();
@@ -260,9 +260,12 @@ public class LoginActivity extends AppCompatActivity {
             });
         }
     }
+    @Override
+    public void onBackPressed(){
+    }
     //method to set user extra props
     private void setUsername(String uname,String type, String email){
-        CollectionReference collection = db.collection("users");
+        //CollectionReference collection = db.collection("users");
         Map<String, Object> user = new HashMap<>();
         user.put("username", uname);
         user.put("type", type);

@@ -34,6 +34,30 @@
         android:layout_height="137dp"
         android:contentDescription="@string/my_profile"
         android:background="@drawable/ic_person" />
+    <EditText
+        android:id="@+id/editBio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imageButton"/>
+    <Button
+        android:id="@+id/setBarLoc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/aggiungi_bar"
+        android:layout_alignTop="@+id/logout"
+        android:layout_marginStart="30dp"
+        android:onClick="setBarLocation"
+
+        />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/setBarLoc"
+        android:text="@string/modifica_men"
+        android:layout_marginBottom="5dp"
+        android:layout_above="@+id/setBarLoc"
+        android:onClick="updateMenu"/>
+
 
     <Button
         android:id="@+id/logout"

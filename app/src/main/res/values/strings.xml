@@ -39,4 +39,11 @@
     <string name="my_profile">my profile</string>
     <string name="logout">logout</string>
     <string name="UserString">Utente:</string>
+    <string name="aggiungi_bar">aggiungi bar</string>
+    <string name="modifica_men">modifica menù</string>
+    <string name="prezzo">prezzo</string>
+    <string name="nome">Nome</string>
+    <string name="add">add</string>
+    <string name="aggiungi_al_men">aggiungi al menù</string>
+    <string name="aggiungi_foto">aggiungi foto</string>
 </resources>
