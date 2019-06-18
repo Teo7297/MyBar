@@ -2,13 +2,28 @@ package it.uninsubria.mybar;
 
 import android.app.ListActivity;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +31,7 @@ import java.util.Map;
 
 public class MenuUpdate extends ListActivity {
     //LIST OF ARRAY STRINGS WHICH WILL SERVE AS LIST ITEMS
-    ArrayList<String> listItems=new ArrayList<String>();
+    ArrayList<String> listItems;
 
     //DEFINING A STRING ADAPTER WHICH WILL HANDLE THE DATA OF THE LISTVIEW
     ArrayAdapter<String> adapter;
@@ -40,12 +55,73 @@ public class MenuUpdate extends ListActivity {
 
         editName = (EditText) findViewById(R.id.editName);
         editPrice = (EditText) findViewById(R.id.editPrice);
-        adapter = ArrayAdapter.createFromResource(this, android.R.layout.simple_list_item_1);//TODO scaricare il menu se era gia stato creato in precedenza
+
+        DocumentReference docRef = db.collection("menu").document(email);
+
+        docRef.get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+
+                        DocumentSnapshot document = task.getResult();
+                        listItems = new ArrayList<String>();
+                        if(document.contains("myMenu")) {
+
+                            for (Object item : task.getResult().getData().values()) {
+                                 listItems = (ArrayList<String>) item;
+                            }
+
+                        }
+                        setMyAdapter();
+                    }
+
+                });
+
+        /*db.collection("users").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        if(document.getId().equals(email) && document.contains("myMenu")){
+                            listItems = (ArrayList<String>) document.get("myMenu");
+                            setMyAdapter();
+                        }else if(document.getId().equals(email) && !document.contains("myMenu")){
+                            listItems = new ArrayList<String>();
+                            setMyAdapter();
+                        }
+
+                        Log.d("succ", document.getId() + " => " + document.getData());
+                    }
+                } else {
+                    Log.w("fail", "Error getting documents.", task.getException());
+                }
+            }
+        });*/
+
+       final ListView lv = getListView();
+        lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int row, long arg3) {
+                listItems.remove(row);
+                lv.invalidateViews();
+                adapter.notifyDataSetChanged();
+                return true;
+            }
+        });
+
+    }
+
+
+    public void setMyAdapter(){
         adapter=new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1,
                 listItems);
         setListAdapter(adapter);
+        adapter.notifyDataSetChanged();
+
+
     }
+
 
 
     public void addItem(View v){
@@ -58,15 +134,13 @@ public class MenuUpdate extends ListActivity {
             editName.setText("");
             editPrice.setText("");
         }
-        //store listItems on firebase
-
     }
 
     public void uploadList(View v){
-        Map<String, Object> myMenu = new HashMap<>();
-        myMenu.put("menu", listItems);
-
-
-        db.collection("menu").document(email).set(myMenu);
+        if(listItems != null) {
+            Map<String, Object> myMenu = new HashMap<>();
+            myMenu.put("myMenu", listItems);
+            db.collection("menu").document(email).set(myMenu);
+        }
     }
 }

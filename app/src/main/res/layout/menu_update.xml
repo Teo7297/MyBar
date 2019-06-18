@@ -47,7 +47,8 @@
     <ListView
         android:id="@android:id/list"
         android:layout_width="match_parent"
-        android:layout_height="590dp">
+        android:layout_height="526dp"
+        android:longClickable="true">
 
     </ListView>
 

@@ -198,6 +198,17 @@ public class MapsActivity extends FragmentActivity implements
         mMap.setOnMyLocationButtonClickListener(this);
         enableMyLocation();
         downloadAllBars();
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                //TODO get the menu
+
+                return true;
+            }});
+    }
+
+    @Override
+    public void onMarkerClick(final Marker marker){
 
     }
 
