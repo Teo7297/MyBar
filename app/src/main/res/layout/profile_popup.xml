@@ -23,6 +23,7 @@
 
     <TextView
         android:id="@+id/username_text"
+        android:textSize="20dp"
         android:layout_width="157dp"
         android:layout_height="101dp"
         android:layout_alignTop="@+id/imageButton"
@@ -34,11 +35,7 @@
         android:layout_height="137dp"
         android:contentDescription="@string/my_profile"
         android:background="@drawable/ic_person" />
-    <EditText
-        android:id="@+id/editBio"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/imageButton"/>
+
     <Button
         android:id="@+id/setBarLoc"
         android:layout_width="wrap_content"

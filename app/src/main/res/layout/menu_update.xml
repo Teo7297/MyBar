@@ -33,7 +33,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
         <Button
             android:id="@+id/addItem"
@@ -41,22 +41,24 @@
             android:layout_height="wrap_content"
             android:text="@string/aggiungi_al_men"
             android:onClick="addItem"/>
+        <Button
+
+            android:id="@+id/uploadList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="uploadList"
+            android:text="@string/conferma" />
+
 
     </LinearLayout>
 
     <ListView
         android:id="@android:id/list"
         android:layout_width="match_parent"
-        android:layout_height="526dp"
+        android:layout_height="wrap_content"
         android:longClickable="true">
+
 
     </ListView>
 
-    <Button
-        android:id="@+id/uploadList"
-        android:onClick="uploadList"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/conferma"
-        />
 </LinearLayout>

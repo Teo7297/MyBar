@@ -46,4 +46,6 @@
     <string name="add">add</string>
     <string name="aggiungi_al_men">aggiungi al menù</string>
     <string name="aggiungi_foto">aggiungi foto</string>
+    <string name="facebook_app_id">1167213520116477</string> <string name="fb_login_protocol_scheme">fb1167213520116477</string>
+
 </resources>

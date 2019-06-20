@@ -24,6 +24,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,7 +57,7 @@ public class MenuUpdate extends ListActivity {
         editName = (EditText) findViewById(R.id.editName);
         editPrice = (EditText) findViewById(R.id.editPrice);
 
-        DocumentReference docRef = db.collection("menu").document(email);
+        DocumentReference docRef = db.collection("users").document(email);
 
         docRef.get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -67,36 +68,17 @@ public class MenuUpdate extends ListActivity {
                         listItems = new ArrayList<String>();
                         if(document.contains("myMenu")) {
 
-                            for (Object item : task.getResult().getData().values()) {
-                                 listItems = (ArrayList<String>) item;
-                            }
-
+                            listItems.clear();
+                            listItems = (ArrayList<String>) document.get("myMenu");
+                            setMyAdapter();
                         }
-                        setMyAdapter();
+
+
+
                     }
 
                 });
 
-        /*db.collection("users").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        if(document.getId().equals(email) && document.contains("myMenu")){
-                            listItems = (ArrayList<String>) document.get("myMenu");
-                            setMyAdapter();
-                        }else if(document.getId().equals(email) && !document.contains("myMenu")){
-                            listItems = new ArrayList<String>();
-                            setMyAdapter();
-                        }
-
-                        Log.d("succ", document.getId() + " => " + document.getData());
-                    }
-                } else {
-                    Log.w("fail", "Error getting documents.", task.getException());
-                }
-            }
-        });*/
 
        final ListView lv = getListView();
         lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -140,7 +122,7 @@ public class MenuUpdate extends ListActivity {
         if(listItems != null) {
             Map<String, Object> myMenu = new HashMap<>();
             myMenu.put("myMenu", listItems);
-            db.collection("menu").document(email).set(myMenu);
+            db.collection("users").document(email).set(myMenu, SetOptions.merge());
         }
     }
 }

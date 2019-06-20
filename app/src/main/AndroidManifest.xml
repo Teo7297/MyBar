@@ -29,6 +29,8 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
         <activity android:name=".MenuUpdate"/>
+
+
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps" />
@@ -40,5 +42,8 @@
             </intent-filter>
         </activity>
     </application>
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+
 
 </manifest>

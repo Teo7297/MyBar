@@ -2,13 +2,10 @@ package it.uninsubria.mybar;
 
 import android.Manifest;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.MatrixCursor;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -17,13 +14,12 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
-import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -31,22 +27,16 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
-import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,6 +52,7 @@ public class MapsActivity extends FragmentActivity implements
 
     private GoogleMap mMap;
     Dialog dialog;
+    Dialog menuDialog;
     FirebaseFirestore db;
     String username;
     String tipo;
@@ -74,8 +65,8 @@ public class MapsActivity extends FragmentActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.floatButton);
         dialog = new Dialog(this);
+        menuDialog = new Dialog(this);
 
 
 
@@ -193,24 +184,102 @@ public class MapsActivity extends FragmentActivity implements
      */
     @Override
     public void onMapReady(GoogleMap map) {
+        final FloatingActionButton goTo = (FloatingActionButton) findViewById(R.id.goToMaps);
+        final FloatingActionButton showMenu = (FloatingActionButton) findViewById(R.id.showMenu);
+        showMenu.hide();
+        goTo.hide();
         mMap = map;
 
         mMap.setOnMyLocationButtonClickListener(this);
         enableMyLocation();
         downloadAllBars();
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                goTo.hide();
+                goTo.setClickable(false);
+                goTo.setFocusable(false);
+                showMenu.hide();
+                showMenu.setClickable(false);
+                showMenu.setFocusable(false);
+            }
+        });
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                //TODO get the menu
+
+                goTo.setClickable(true);
+                goTo.setFocusable(true);
+                goTo.show();
+                showMenu.setClickable(true);
+                showMenu.setFocusable(true);
+                showMenu.show();
+                myMarker = marker;
+
 
                 return true;
             }});
     }
+    public void goTo(View view){
+        Intent navigation = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" +myMarker.getPosition().latitude+","+myMarker.getPosition().longitude));
+        startActivity(navigation);
+    }
 
-    @Override
-    public void onMarkerClick(final Marker marker){
+    ArrayList<String> barMenu;
+    ArrayAdapter<String> Menuadapter;
+    public void showMenu(View v){
+
+        menuDialog.setContentView(R.layout.menu_popup);
+        //aggiungi eventuali elementi del dialog
+
+
+        final GeoPoint geoPoint = new GeoPoint(myMarker.getPosition().latitude, myMarker.getPosition().longitude);
+
+        db.collection("users").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        if(document.get("bar location") != null && document.get("bar location").equals(geoPoint)){
+                            if(document.contains("myMenu")) {
+                                barMenu = (ArrayList<String>) document.get("myMenu");
+                                adaptList(barMenu);
+
+                            }else barMenu = null; adaptList(barMenu);
+                            break;
+                        }
+                    }
+                }
+            }
+        });
+
 
     }
+    public void adaptList(ArrayList<String> aList){
+        ListView menuList = (ListView) menuDialog.findViewById(R.id.menuList);
+        if(barMenu != null) {
+            Menuadapter = new ArrayAdapter<String>(this,
+                    android.R.layout.simple_list_item_1,
+                    barMenu);
+            menuList.setAdapter(Menuadapter);
+            Menuadapter.notifyDataSetChanged();
+            menuDialog.show();
+
+
+        }else{
+            barMenu = new ArrayList<String>();
+            barMenu.add("nessun elemento");
+            Menuadapter = new ArrayAdapter<String>(this,
+                    android.R.layout.simple_list_item_1,
+                    barMenu);
+            menuList.setAdapter(Menuadapter);
+            Menuadapter.notifyDataSetChanged();
+            menuDialog.show();
+            //barMenu.clear();
+        }
+    }
+
+
 
     private void downloadAllBars() {
         db.collection("users").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -222,7 +291,6 @@ public class MapsActivity extends FragmentActivity implements
                             GeoPoint point = (GeoPoint) document.get("bar location");
                             LatLng latLng = new LatLng(point.getLatitude(), point.getLongitude());
                             Marker marker = mMap.addMarker(new MarkerOptions().position(latLng));
-                            //TODO assegnare un id al marker appena piazzato che permetta di scaricare il menu del bar relativo
 
                         }
                         Log.d("succ", document.getId() + " => " + document.getData());
