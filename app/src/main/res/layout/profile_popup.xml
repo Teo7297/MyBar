@@ -41,9 +41,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/aggiungi_bar"
-        android:layout_alignTop="@+id/logout"
         android:layout_marginStart="30dp"
         android:onClick="setBarLocation"
+        android:layout_marginTop="200dp"
 
         />
     <Button
@@ -51,8 +51,7 @@
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/setBarLoc"
         android:text="@string/modifica_men"
-        android:layout_marginBottom="5dp"
-        android:layout_above="@+id/setBarLoc"
+        android:layout_below="@+id/setBarLoc"
         android:onClick="updateMenu"/>
 
 
@@ -65,5 +64,13 @@
         android:layout_marginEnd="30dp"
         android:layout_alignEnd="@id/txtClose"
         android:text="@string/logout" />
+    <EditText
+        android:id="@+id/barNameText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imageButton"
+        android:hint="@string/inserisci_il_nome_del_tuo_bar"
+        android:layout_alignStart="@+id/imageButton"
+        />
 
 </RelativeLayout>

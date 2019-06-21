@@ -142,9 +142,9 @@ public class MapsActivity extends FragmentActivity implements
         GeoPoint geoPoint = new GeoPoint(lat, lng);
         Map<String, Object> myBarLocation = new HashMap<>();
         myBarLocation.put("bar location", geoPoint);
+        myBarLocation.put("bar name", barName);
         db.collection("users").document(email).set(myBarLocation, SetOptions.merge());
 
-        //TODO assegnare locandina del bar al marker
 
         //place marker on map
         myMarker = mMap.addMarker(new MarkerOptions().position(latLng));
@@ -208,6 +208,7 @@ public class MapsActivity extends FragmentActivity implements
             @Override
             public boolean onMarkerClick(Marker marker) {
 
+                //now visible
                 goTo.setClickable(true);
                 goTo.setFocusable(true);
                 goTo.show();
@@ -215,6 +216,7 @@ public class MapsActivity extends FragmentActivity implements
                 showMenu.setFocusable(true);
                 showMenu.show();
                 myMarker = marker;
+                marker.showInfoWindow();
 
 
                 return true;
@@ -290,7 +292,10 @@ public class MapsActivity extends FragmentActivity implements
                         if(document.get("bar location") != null){
                             GeoPoint point = (GeoPoint) document.get("bar location");
                             LatLng latLng = new LatLng(point.getLatitude(), point.getLongitude());
-                            Marker marker = mMap.addMarker(new MarkerOptions().position(latLng));
+                            MarkerOptions mOpt = new MarkerOptions();
+                            mOpt.position(latLng);
+                            mOpt.title("bar");
+                            Marker marker = mMap.addMarker(mOpt);
 
                         }
                         Log.d("succ", document.getId() + " => " + document.getData());
