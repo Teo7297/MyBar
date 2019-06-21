@@ -26,15 +26,15 @@
         android:text="@string/registrati"
         tools:targetApi="o" />
 
-    <Button
-        android:id="@+id/notRegUser"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginVertical="320dp"
-        android:text="@string/accedi_come_ospite"
-        tools:targetApi="o" />
 
+    <com.facebook.login.widget.LoginButton
+        android:id="@+id/facebookLogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/registrationButton"
+        android:layout_marginTop="330dp"
+
+        />
 
 
 </RelativeLayout>

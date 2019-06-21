@@ -1,14 +1,19 @@
 package it.uninsubria.mybar;
 
 import android.app.ListActivity;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -119,10 +124,12 @@ public class MenuUpdate extends ListActivity {
     }
 
     public void uploadList(View v){
+        Toast.makeText(getApplicationContext(), "menù salvato!", Toast.LENGTH_LONG).show();
         if(listItems != null) {
             Map<String, Object> myMenu = new HashMap<>();
             myMenu.put("myMenu", listItems);
             db.collection("users").document(email).set(myMenu, SetOptions.merge());
         }
+        finish();
     }
 }

@@ -25,6 +25,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.internal.firebase_auth.zzes;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -77,6 +82,36 @@ public class LoginActivity extends AppCompatActivity {
         dialog = new Dialog(this);
         loginPreferences = getApplicationContext().getSharedPreferences("loginPrefs", MODE_PRIVATE);
         loginPrefsEditor = loginPreferences.edit();
+
+        CallbackManager callbackManager = CallbackManager.Factory.create();
+
+
+        LoginButton loginButton = (LoginButton) findViewById(R.id.facebookLogin);
+        loginButton.setReadPermissions("email");
+
+        // Callback registration
+        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                /*Toast toast = Toast.makeText(getApplicationContext(), "login effettuato!", Toast.LENGTH_LONG);
+                toast.show();
+                Intent intent = new Intent(LoginActivity.this, MapsActivity.class);          //name nextact
+                intent.addFlags((Intent.FLAG_ACTIVITY_NEW_TASK));
+                intent.addFlags((Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                startActivity(intent);
+                finish();*/ //non so come rendere l'app attendibile
+            }
+
+            @Override
+            public void onCancel() {
+                // App code
+            }
+
+            @Override
+            public void onError(FacebookException exception) {
+                // App code
+            }
+        });
 
 
 
@@ -150,7 +185,7 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if(task.isSuccessful()){
-                        Toast toast = Toast.makeText(getApplicationContext(), "login succesful", Toast.LENGTH_LONG);
+                        Toast toast = Toast.makeText(getApplicationContext(), "login effettuato!", Toast.LENGTH_LONG);
                         toast.show();
                         Intent intent = new Intent(LoginActivity.this, MapsActivity.class);          //name nextact
                         intent.addFlags((Intent.FLAG_ACTIVITY_NEW_TASK));
@@ -242,7 +277,7 @@ public class LoginActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if(task.isSuccessful()){
                         setUsername(username, spinnerText, email);
-                        Toast toast = Toast.makeText(getApplicationContext(), "registration succesful", Toast.LENGTH_LONG);
+                        Toast toast = Toast.makeText(getApplicationContext(), "registrazione completata!", Toast.LENGTH_LONG);
                         toast.show();
                         Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
                         intent.addFlags((Intent.FLAG_ACTIVITY_NEW_TASK));
@@ -272,20 +307,7 @@ public class LoginActivity extends AppCompatActivity {
         //user.put("email", email);
 
         db.collection("users").document(email).set(user);
-                //.add(collection.document(email).set(user));
 
-                /*.addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-
-                    }
-                }); */
 
     }
 

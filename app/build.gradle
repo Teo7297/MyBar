@@ -37,5 +37,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-database:18.0.0'
     implementation 'com.google.firebase:firebase-firestore:20.0.0'
     implementation 'com.facebook.android:facebook-login:5.0.3'
+    implementation 'com.facebook.android:facebook-android-sdk:4.28.0'
 
 }

@@ -23,9 +23,9 @@
 
     <TextView
         android:id="@+id/username_text"
-        android:textSize="20dp"
+        android:textSize="17dp"
         android:layout_width="157dp"
-        android:layout_height="101dp"
+        android:layout_height="wrap_content"
         android:layout_alignTop="@+id/imageButton"
         android:layout_toEndOf="@+id/imageButton" />
 
@@ -47,6 +47,7 @@
 
         />
     <Button
+        android:id="@+id/editMenu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/setBarLoc"
