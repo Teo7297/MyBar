@@ -76,7 +76,7 @@ public class MenuUpdate extends ListActivity {
                             listItems.clear();
                             listItems = (ArrayList<String>) document.get("myMenu");
                             setMyAdapter();
-                        }
+                        }else setMyAdapter();
 
 
 
