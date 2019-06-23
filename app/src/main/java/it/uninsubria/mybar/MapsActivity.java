@@ -206,7 +206,8 @@ public class MapsActivity extends FragmentActivity implements
 
                             //place marker on map and remove old marker
 
-                            myOldMarker.remove();
+                            if(myOldMarker != null)
+                                myOldMarker.remove();
                             MarkerOptions markerOptions = new MarkerOptions();
                             markerOptions.position(latLng);
                             markerOptions.title(barName);
